@@ -489,7 +489,12 @@ impl<'t, 'p: 't> TcCtx<'t, 'p> {
         }
     }
     
+    pub(crate) fn nat_is_defined(&self) -> bool {
+        self.export_file.name_cache.nat.is_some()
+    }
+
     pub(crate) fn is_nat_zero(&mut self, e: ExprPtr<'t>) -> bool {
+        if !self.nat_is_defined() { return false }
         match self.read_expr(e) {
             Const { .. } => e == self.c_nat_zero(),
             NatLit { ptr, .. } => self.read_bignum(ptr).is_zero(),
@@ -498,13 +503,9 @@ impl<'t, 'p: 't> TcCtx<'t, 'p> {
     }
 
     pub(crate) fn pred_of_nat_succ(&mut self, e: ExprPtr<'t>) -> Option<ExprPtr<'t>> {
-        let nat_succ_name = self.export_file.name_cache.nat_succ?;
-        let nat_succ = {
-            let levels = self.alloc_levels_slice(&[]);
-            self.mk_const(nat_succ_name, levels)
-        };
+        if !self.nat_is_defined() { return None }
         match self.read_expr(e) {
-            App { fun, arg, .. } if fun == nat_succ => Some(arg),
+            App { fun, arg, .. } if fun == self.c_nat_succ() => Some(arg),
             NatLit { ptr, .. } => {
                 let n = self.read_bignum(ptr);
                 if n > BigUint::zero() {
