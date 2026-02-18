@@ -815,6 +815,7 @@ impl<'x, 't: 'x, 'p: 't> TypeChecker<'x, 't, 'p> {
     }
 
     fn def_eq_nat(&mut self, x: ExprPtr<'t>, y: ExprPtr<'t>) -> Option<bool> {
+        if !self.ctx.nat_is_defined() { return None }
         if self.ctx.is_nat_zero(x) && self.ctx.is_nat_zero(y) {
             return Some(true)
         }

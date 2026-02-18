@@ -494,7 +494,6 @@ impl<'t, 'p: 't> TcCtx<'t, 'p> {
     }
 
     pub(crate) fn is_nat_zero(&mut self, e: ExprPtr<'t>) -> bool {
-        if !self.nat_is_defined() { return false }
         match self.read_expr(e) {
             Const { .. } => e == self.c_nat_zero(),
             NatLit { ptr, .. } => self.read_bignum(ptr).is_zero(),
@@ -503,7 +502,6 @@ impl<'t, 'p: 't> TcCtx<'t, 'p> {
     }
 
     pub(crate) fn pred_of_nat_succ(&mut self, e: ExprPtr<'t>) -> Option<ExprPtr<'t>> {
-        if !self.nat_is_defined() { return None }
         match self.read_expr(e) {
             App { fun, arg, .. } if fun == self.c_nat_succ() => Some(arg),
             NatLit { ptr, .. } => {
