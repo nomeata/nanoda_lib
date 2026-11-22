@@ -1271,6 +1271,10 @@ impl<'x, 't: 'x, 'p: 't> TypeChecker<'x, 't, 'p> {
 
     fn mk_rec_rules(&mut self, st: &InductiveCheckState<'t>) -> Vec<Vec<RecRule<'t>>> {
         let mut rec_rules = Vec::new();
+        // Recursors of types without large elimination have no reduction rules.
+        if st.elim_level == Some(self.ctx.zero()) {
+            return vec![Vec::new(); st.all_inductives_incl_specialized.len()];
+        }
         let minors = st.minors.iter().flat_map(|v| v.iter().copied()).collect::<Vec<ExprPtr>>();
         let mut overall_ctor_idx = 0;
         for ind_ty in st.all_inductives_incl_specialized.iter() {
