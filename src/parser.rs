@@ -179,7 +179,7 @@ struct IndInfo {
     ctors: Vec<u32>,
     #[serde(rename = "isRec")]
     is_rec: bool,
-    #[serde(rename = "isReflexive")]
+    #[serde(rename = "isReflexive", default)]
     is_reflexive: bool,
     #[serde(rename = "numIndices")]
     num_indices: u16,
