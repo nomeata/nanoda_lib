@@ -209,9 +209,15 @@ pub fn check_quot<'x, 't: 'x, 'p: 't>(ctx: &'x mut TcCtx<'t, 'p>, declar: &Decla
     };
 
     if declar.info().name == ctx.str1("Quot") {
+        // Since lean4#15023, `Quot : Π {A : Sort u}, (A → A → Prop) → Sort (max 1 u)`; accept both.
+        let one = ctx.succ(ctx.zero());
+        let max_1_u = ctx.max(one, u_level);
+        let sort_max_1_u = ctx.mk_sort(max_1_u);
+        let expected_quot_max_1 = pi_telescope!(in ctx; A, r, sort_max_1_u);
         let env = ctx.export_file.new_env(EnvLimit::ByName(quot_name));
         let mut tc = TypeChecker::new(ctx, &env, Some(*declar.info()));
-        tc.assert_def_eq(declar.info().ty, expected_quot.info().ty);
+        assert!(tc.def_eq(declar.info().ty, expected_quot.info().ty)
+            || tc.def_eq(declar.info().ty, expected_quot_max_1));
     } else if declar.info().name == ctx.str2("Quot", "mk") {
         let env = ctx.export_file.new_env(EnvLimit::ByName(quot_mk_name));
         let mut tc = TypeChecker::new(ctx, &env, Some(*declar.info()));
