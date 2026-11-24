@@ -20,7 +20,7 @@ use std::fmt;
 
 fn check_semver<'a>(meta: &FileMeta<'a>) -> Result<(), Box<dyn Error>> {
     const MIN_SEMVER : semver::Version = semver::Version::new(3, 1, 0);
-    const MAX_SEMVER : semver::Version = semver::Version::new(3, 2, 0);
+    const MAX_SEMVER : semver::Version = semver::Version::new(3, 3, 0);
     let export_file_semver = semver::Version::parse(&meta.format.version)?;
     if export_file_semver < MIN_SEMVER {
         return Err(Box::from(format!(
@@ -1058,8 +1058,8 @@ mod semver_tests {
         let too_big = [
             "4.0.0",
             "4.1.0",
-            "3.2.0",
-            "3.2.1",
+            "3.3.0",
+            "3.3.1",
         ];
 
         for v in too_small {
@@ -1075,6 +1075,8 @@ mod semver_tests {
         let ok = [
             "3.1.0",
             "3.1.9",
+            "3.2.0",
+            "3.2.1",
         ];
         for v in ok {
             assert!(check_semver(&mk_meta(v)).is_ok())
